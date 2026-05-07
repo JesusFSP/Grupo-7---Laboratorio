@@ -4,6 +4,6 @@ from chessPictures import *
 fila1 = knight.join(knight.negative())
 fila2 = knight.negative().join(knight)
 
-figura = fila1.under(fila2)
+figura = fila2.up(fila1)
 
 draw(figura)
