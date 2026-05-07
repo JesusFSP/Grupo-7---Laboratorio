@@ -10,3 +10,6 @@ npm-debug.log*
 
 # variables de entorno
 .venv
+
+__pycache__/
+*.pyc
