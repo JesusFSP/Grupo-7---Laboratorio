@@ -20,7 +20,7 @@ class Picture:
 
   def horizontalMirror(self):
     """ Devuelve el espejo horizontal de la imagen """
-    return Picture(None)
+    return Picture(self.img[::-1])
 
   def negative(self):
     """ Devuelve un negativo de la imagen """
@@ -48,32 +48,31 @@ class Picture:
   def under(self, p):
     """ Devuelve una nueva figura poniendo la figura p sobre la
         figura actual """
-    return Picture(self.img + p.img)
+    nueva_img = []
+    # Recorremos cada fila de la imagen
+    for i in range(len(self.img)):
+        fila = ""
+        # Recorremos cada caracter (pixel) de la fila
+        for j in range(len(self.img[i])):
+            # Si el pixel de la figura superior 'p' es un espacio transparente, mostramos el fondo 'self'
+            if p.img[i][j] == ' ':
+                fila += self.img[i][j]
+            else:
+                # Si no es un espacio, mostramos el pixel de la pieza
+                fila += p.img[i][j]
+        nueva_img.append(fila)
+    return Picture(nueva_img)
   
   def horizontalRepeat(self, n):
     """ Devuelve una nueva figura repitiendo la figura actual al costado
         la cantidad de veces que indique el valor de n """
-    resultado = self
-    for i in range(n - 1):
-        resultado = resultado.join(self)
-    return resultado
+    nueva_img = []
+    for fila in self.img:
+        nueva_img.append(fila * n)
+    return Picture(nueva_img)
 
   def verticalRepeat(self, n):
-    resultado = self
-    for i in range(n - 1):
-        resultado = resultado.under(self)
-    return resultado
-
-  def overlay(self, other):
-    """Superpone otra imagen sobre esta, manteniendo los colores de fondo"""
-    combined_img = []
-    for base_row, overlay_row in zip(self.img, other.img):
-        combined_row = ""
-        for base_char, overlay_char in zip(base_row, overlay_row):
-            # Mantener el carácter de la pieza a menos que sea espacio
-            combined_row += overlay_char if overlay_char != ' ' else base_char
-        combined_img.append(combined_row)
-    return Picture(combined_img)
+    return Picture(self.img * n)
 
   #Extra: Sólo para realmente viciosos 
   def rotate(self):
