@@ -4,74 +4,78 @@ from chessPictures import *
 claro = square
 oscuro = square.negative()
 
-fila8 = oscuro.overlay(rock.negative()).join(
-        claro.overlay(knight.negative())).join(
-        oscuro.overlay(bishop.negative())).join(
-        claro.overlay(queen.negative())).join(
-        oscuro.overlay(king.negative())).join(
-        claro.overlay(bishop.negative())).join(
-        oscuro.overlay(knight.negative())).join(
-        claro.overlay(rock.negative()))
-
-fila7 = claro.overlay(pawn.negative()).join(
-        oscuro.overlay(pawn.negative())).join(
-        claro.overlay(pawn.negative())).join(
-        oscuro.overlay(pawn.negative())).join(
+fila8 = oscuro.under(rock.negative()).join(
         claro).join(
-        oscuro.overlay(pawn.negative())).join(
-        claro.overlay(pawn.negative())).join(
-        oscuro.overlay(pawn.negative()))
+        oscuro.under(bishop.negative())).join(
+        claro.under(queen.negative())).join(
+        oscuro.under(king.negative())).join(
+        claro.under(bishop.negative())).join(
+        oscuro.under(knight.negative())).join(
+        claro.under(rock.negative()))
 
-fila6 = oscuro.join(claro).join(
-        oscuro.overlay(knight.negative())).join(
+fila7 = claro.under(pawn.negative()).join(
+        oscuro.under(pawn.negative())).join(
+        claro.under(pawn.negative())).join(
+        oscuro.under(pawn.negative())).join(
+        claro).join(
+        oscuro.under(pawn.negative())).join(
+        claro.under(pawn.negative())).join(
+        oscuro.under(pawn.negative()))
+
+fila6 = oscuro.join(
+        claro).join(
+        oscuro.under(knight.negative())).join(
         claro).join(
         oscuro).join(
         claro).join(
         oscuro).join(
         claro)
 
-fila5 = claro.join(oscuro).join(
+fila5 = claro.join(
+        oscuro).join(
         claro).join(
         oscuro).join(
-        claro.overlay(pawn.negative())).join(
+        claro.under(pawn.negative())).join(
         oscuro).join(
         claro).join(
         oscuro)
 
-fila4 = oscuro.join(claro).join(
+fila4 = oscuro.join(
+        claro).join(
         oscuro).join(
-        claro.overlay(pawn)).join(
-        oscuro.overlay(pawn)).join(
+        claro.under(pawn)).join(
+        oscuro.under(pawn)).join(
         claro).join(
         oscuro).join(
         claro)
 
-fila3 = claro.join(oscuro).join(
+fila3 = claro.join(
+        oscuro).join(
         claro).join(
         oscuro).join(
         claro).join(
-        oscuro.overlay(knight)).join(
+        oscuro.under(knight)).join(
         claro).join(
         oscuro)
 
-fila2 = oscuro.overlay(pawn).join(
-        claro.overlay(pawn)).join(
-        oscuro.overlay(pawn)).join(
+fila2 = oscuro.under(pawn).join(
+        claro.under(pawn)).join(
+        oscuro.under(pawn)).join(
         claro).join(
         oscuro).join(
-        claro.overlay(pawn)).join(
-        oscuro.overlay(pawn)).join(
-        claro.overlay(pawn))
+        claro.under(pawn)).join(
+        oscuro.under(pawn)).join(
+        claro.under(pawn))
 
-fila1 = claro.overlay(rock).join(
-        oscuro.overlay(knight)).join(
-        claro.overlay(bishop)).join(
-        oscuro.overlay(queen)).join(
-        claro.overlay(king)).join(
-        oscuro.overlay(bishop)).join(
+fila1 = claro.under(rock).join(
+        oscuro.under(knight)).join(
+        claro.under(bishop)).join(
+        oscuro.under(queen)).join(
+        claro.under(king)).join(
+        oscuro.under(bishop)).join(
         claro).join(
-        oscuro.overlay(rock))
+        oscuro.under(rock))
 
-tablero = fila8.under(fila7).under(fila6).under(fila5).under(fila4).under(fila3).under(fila2).under(fila1)
+tablero = fila1.up(fila2).up(fila3).up(fila4).up(fila5).up(fila6).up(fila7).up(fila8)
 
 draw(tablero)
