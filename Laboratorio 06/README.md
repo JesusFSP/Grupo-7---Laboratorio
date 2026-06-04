@@ -325,33 +325,77 @@ Durante el laboratorio se verificó correctamente:
 
 ---
 
-## Repositorio del Proyecto
 
-Repositorio GitHub del proyecto:
+## Implementación de Vistas (Django Views) - Laboratorio 07
 
-https://github.com/JesusFSP/Grupo-7---Laboratorio
+En esta fase del proyecto, se migró de la gestión exclusiva en el backend (Django Admin) hacia la capa de presentación al usuario mediante el patrón **MVT (Model-View-Template)**. Se implementaron vistas basadas en funciones (FBV - Function-Based Views) encargadas de interceptar las peticiones HTTP, interactuar con el ORM de Django para extraer la información de la base de datos SQLite y renderizar las plantillas HTML dinámicas.
 
----
 
-## Bibliografía
 
-* Django Documentation  
-  https://docs.djangoproject.com/
+### 1. Flujo de Control e Infraestructura de Rutas
 
-* Django Model Field Reference  
-  https://docs.djangoproject.com/en/4.1/ref/models/fields/
+El enrutamiento se estructuró de forma modular, dividiendo las responsabilidades entre el núcleo del proyecto y la aplicación interna:
 
-* Django Admin Site  
-  https://docs.djangoproject.com/en/4.1/ref/contrib/admin/
+* **`MyDjangoProject/urls.py` (Core):** Centraliza el acceso global delegando el espacio de nombres de la aplicación mediante la función `include()`.
+* **`MyWebApps/MyFirstApplication/urls.py` (App):** Define los endpoints específicos del restaurante, asociando expresiones de rutas limpias con sus respectivas funciones controladoras en `views.py`.
 
-* MDN Web Docs - Django Tutorial  
-  https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django
+### 2. Detalle de las Vistas Implementadas
 
-* Git Documentation  
-  https://git-scm.com/doc
+Todas las vistas utilizan funciones nativas que reciben un objeto `request` y devuelven una respuesta estructurada mediante `render()`, inyectando diccionarios de contexto con datos dinámicos extraídos mediante el ORM.
 
-* GitHub Docs  
-  https://docs.github.com/
+#### A. Vista de Inicio (`home`)
+* **Función:** Controla el punto de acceso principal del sitio web del restaurante.
+* **Lógica:** Renderiza una plantilla estático-dinámica (`home.html`) que introduce al usuario al sistema de gestión de parrillas (Steakhouse).
+
+#### B. Vista de Categorías (`category_list`)
+* **Función:** Expone los diferentes grupos de comidas disponibles.
+* **Consulta ORM:** Realiza un mapeo relacional directo recuperando únicamente los registros que superan el borrado lógico:
+    ```python
+    categories = MenuCategory.objects.filter(status=True)
+    ```
+* **Presentación:** Envía la colección al template `category_list.html` para listar elementos como "Cortes Premium", "Guarniciones" o "Bebidas".
+
+#### C. Vista del Menú (`menu_list`)
+* **Función:** Muestra la carta detallada de platos y cortes de carne disponibles.
+* **Optimización ORM:** Para evitar el problema de rendimiento de consultas *N+1*, se implementa un método de carga optimizada (`select_related`) que realiza un `JOIN` SQL explícito a nivel de base de datos para traer los datos de la categoría adjunta en una única transacción:
+    ```python
+    menu_items = MenuItem.objects.select_related('category').filter(status=True)
+    ```
+* **Template:** `menu_list.html`, encargado de renderizar de forma tabular los platos, sus precios formateados y sus especificaciones (como indicadores de platos vegetarianos).
+
+#### D. Vista de Mesas (`table_list`)
+* **Función:** Muestra la distribución y el estado de los espacios físicos del local.
+* **Lógica:** Filtra las mesas activas del restaurante utilizando:
+    ```python
+    tables = Table.objects.filter(status=True)
+    ```
+* **Template:** `table_list.html`, que expone visualmente el número de mesa, la capacidad de comensales y su salón/ubicación (Terraza, Salón Interior, Zona VIP).
+
+#### E. Vista de Reservaciones (`reservation_list`)
+* **Función:** Permite auditar y listar las reservaciones vigentes en el Steakhouse.
+* **Optimización ORM:** Dado que el modelo `Reservation` funciona como una tabla transaccional intermedia conectada a múltiples entidades, se optimizó la consulta concatenando las claves foráneas de clientes y mesas mediante carga eficiente:
+    ```python
+    reservations = Reservation.objects.select_related('customer', 'table').filter(status=True)
+    ```
+* **Template:** `reservation_list.html`, el cual genera una bitácora detallada mostrando el nombre completo del cliente, la mesa asignada, la fecha programada y el conteo de invitados.
+
+### 3. Mecanismo de Renderizado y Contexto
+Cada función controladora procesa la lógica interna dentro de un bloque estructurado que mitiga excepciones de base de datos vacía. El diccionario de contexto actúa como el canal seguro de transferencia de objetos hacia la capa View del navegador, logrando un desacoplamiento óptimo entre el motor relacional y el marcado HTML.
+
+***
+
+### Referencias y Bibliografía
+
+* **Django Software Foundation.** (2026). *Django Documentation (Sitio Oficial)*. Recuperado de `https://docs.djangoproject.com/`
+* **Django Software Foundation.** (2026). *Distribuidor de URL de Django (URL dispatcher)*. Recuperado de `https://docs.djangoproject.com/en/stable/topics/http/urls/`
+* **Django Software Foundation.** (2026). *Vistas de escritura (Writing views)*. Recuperado de `https://docs.djangoproject.com/en/stable/topics/http/views/`
+* **Django Software Foundation.** (2026). *Optimización del acceso a la base de datos: select_related*. Recuperado de `https://docs.djangoproject.com/en/stable/ref/models/querysets/#select-related`
+* **Django Software Foundation.** (2026). *Referencia de campos de modelos (Model Field Reference)*. Recuperado de `https://docs.djangoproject.com/en/4.1/ref/models/fields/`
+* **Django Software Foundation.** (2026). *Sitio de administración de Django (Django Admin)*. Recuperado de `https://docs.djangoproject.com/en/4.1/ref/contrib/admin/`
+* **MDN Web Docs.** (2025). *Tutorial de Django (Server-side web framework)*. Mozilla Developer Network. Recuperado de `https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django`
+* **MDN Web Docs.** (2025). *Tutorial de Django Parte 5: Creando nuestra página de inicio (Vistas y Plantillas)*. Mozilla Developer Network. Recuperado de `https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Home_page`
+* **Git.** (2026). *Documentación Oficial de Git*. Recuperado de `https://git-scm.com/doc`
+* **GitHub.** (2026). *GitHub Docs*. Recuperado de `https://docs.github.com/`
 
 ---
 
