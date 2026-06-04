@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import MenuItem, MenuCategory, Table
+from .models import MenuItem, MenuCategory, Table, Reservation
 
 def home(request):
     return render(request, 'MyFirstApplication/home.html')
@@ -26,4 +26,12 @@ def table_list(request):
         request,
         'MyFirstApplication/table_list.html',
         {'tables': tables}
+    )
+
+def reservation_list(request):
+    reservations = Reservation.objects.all()
+    return render(
+        request,
+        'MyFirstApplication/reservation_list.html',
+        {'reservations': reservations}
     )
