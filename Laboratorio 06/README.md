@@ -339,46 +339,24 @@ El enrutamiento se estructuró de forma modular, dividiendo las responsabilidade
 * **`MyDjangoProject/urls.py` (Core):** Centraliza el acceso global delegando el espacio de nombres de la aplicación mediante la función `include()`.
 * **`MyWebApps/MyFirstApplication/urls.py` (App):** Define los endpoints específicos del restaurante, asociando expresiones de rutas limpias con sus respectivas funciones controladoras en `views.py`.
 
-### 2. Detalle de las Vistas Implementadas
+### Detalle de las Vistas Implementadas (`views.py`)
 
-Todas las vistas utilizan funciones nativas que reciben un objeto `request` y devuelven una respuesta estructurada mediante `render()`, inyectando diccionarios de contexto con datos dinámicos extraídos mediante el ORM.
+Todas las vistas implementadas utilizan la función nativa `render()` de Django. Esta función recibe el objeto de petición (`request`), la ruta de la plantilla HTML, y un diccionario de contexto que inyecta los datos dinámicos extraídos de los modelos.
 
-#### A. Vista de Inicio (`home`)
-* **Función:** Controla el punto de acceso principal del sitio web del restaurante.
-* **Lógica:** Renderiza una plantilla estático-dinámica (`home.html`) que introduce al usuario al sistema de gestión de parrillas (Steakhouse).
+1. **Vista de Inicio (`home`):**
+   * Controla el punto de acceso principal del sitio web del Steakhouse. Renderiza la plantilla estática `home.html` que da la bienvenida al sistema sin requerir transacciones con la base de datos.
 
-#### B. Vista de Categorías (`category_list`)
-* **Función:** Expone los diferentes grupos de comidas disponibles.
-* **Consulta ORM:** Realiza un mapeo relacional directo recuperando únicamente los registros que superan el borrado lógico:
-    ```python
-    categories = MenuCategory.objects.filter(status=True)
-    ```
-* **Presentación:** Envía la colección al template `category_list.html` para listar elementos como "Cortes Premium", "Guarniciones" o "Bebidas".
+2. **Vista de Categorías (`category_list`):**
+   * Emplea el ORM mediante la instrucción `MenuCategory.objects.all()` para recuperar el listado completo de las agrupaciones de comida (ej. Cortes Premium, Bebidas) y las inyecta en la plantilla `category_list.html` a través del contexto `{'categories': categories}`.
 
-#### C. Vista del Menú (`menu_list`)
-* **Función:** Muestra la carta detallada de platos y cortes de carne disponibles.
-* **Optimización ORM:** Para evitar el problema de rendimiento de consultas *N+1*, se implementa un método de carga optimizada (`select_related`) que realiza un `JOIN` SQL explícito a nivel de base de datos para traer los datos de la categoría adjunta en una única transacción:
-    ```python
-    menu_items = MenuItem.objects.select_related('category').filter(status=True)
-    ```
-* **Template:** `menu_list.html`, encargado de renderizar de forma tabular los platos, sus precios formateados y sus especificaciones (como indicadores de platos vegetarianos).
+3. **Vista del Menú (`menu_list`):**
+   * Se encarga de exponer la carta del restaurante. Utiliza la consulta `MenuItem.objects.all()` para extraer todos los platos registrados y sus atributos (como el precio) enviándolos al template `menu_list.html` bajo la llave de contexto `{'items': items}`.
 
-#### D. Vista de Mesas (`table_list`)
-* **Función:** Muestra la distribución y el estado de los espacios físicos del local.
-* **Lógica:** Filtra las mesas activas del restaurante utilizando:
-    ```python
-    tables = Table.objects.filter(status=True)
-    ```
-* **Template:** `table_list.html`, que expone visualmente el número de mesa, la capacidad de comensales y su salón/ubicación (Terraza, Salón Interior, Zona VIP).
+4. **Vista de Mesas (`table_list`):**
+   * Muestra la distribución de los espacios físicos del local. Recupera todos los registros mediante `Table.objects.all()` para que la plantilla `table_list.html` pueda iterar sobre ellas y mostrar capacidades o ubicaciones.
 
-#### E. Vista de Reservaciones (`reservation_list`)
-* **Función:** Permite auditar y listar las reservaciones vigentes en el Steakhouse.
-* **Optimización ORM:** Dado que el modelo `Reservation` funciona como una tabla transaccional intermedia conectada a múltiples entidades, se optimizó la consulta concatenando las claves foráneas de clientes y mesas mediante carga eficiente:
-    ```python
-    reservations = Reservation.objects.select_related('customer', 'table').filter(status=True)
-    ```
-* **Template:** `reservation_list.html`, el cual genera una bitácora detallada mostrando el nombre completo del cliente, la mesa asignada, la fecha programada y el conteo de invitados.
-
+5. **Vista de Reservaciones (`reservation_list`):**
+   * Gestiona la presentación del historial de citas. Utiliza `Reservation.objects.all()` para obtener todas las reservas efectuadas, trasladando esta colección a la vista `reservation_list.html` para auditar la asignación de mesas a los comensales.
 ### 3. Mecanismo de Renderizado y Contexto
 Cada función controladora procesa la lógica interna dentro de un bloque estructurado que mitiga excepciones de base de datos vacía. El diccionario de contexto actúa como el canal seguro de transferencia de objetos hacia la capa View del navegador, logrando un desacoplamiento óptimo entre el motor relacional y el marcado HTML.
 
