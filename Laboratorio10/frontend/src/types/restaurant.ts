@@ -27,4 +27,5 @@ export interface ReservationResponse {
     next: string | null;
     previous: string | null;
     results: Reservation[];
+
 }

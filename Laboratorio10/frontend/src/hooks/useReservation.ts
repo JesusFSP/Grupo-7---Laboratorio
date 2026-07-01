@@ -8,4 +8,5 @@ export function useReservation(reservationId: string) {
         enabled: Boolean(reservationId),
         staleTime: 1000 * 60 * 5,
     });
+
 }

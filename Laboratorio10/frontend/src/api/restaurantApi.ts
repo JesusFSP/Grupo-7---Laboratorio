@@ -9,4 +9,6 @@ export async function fetchReservationDetail(id: string): Promise<ReservationRes
         throw new Error('Error al obtener la reserva. Verifique el código.');
     }
     return response.json();
+
+
 }
