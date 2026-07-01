@@ -8,8 +8,15 @@ npm-debug.log*
 .DS_Store
 .vscode/
 
-# variables de entorno
-.venv
+# Variables de entorno locales (Frontend)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
 __pycache__/
 *.pyc
+# Construcción de Vite (Frontend)
+dist/
+dist-ssr/
