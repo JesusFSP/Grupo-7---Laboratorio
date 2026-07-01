@@ -1,22 +1,23 @@
 export interface Customer {
-    id: number;
-    full_name: string;
+    id: string;
+    first_name: string;
+    last_name: string;
     email: string;
-    phone: string;
+    phone_number: string;
 }
 
 export interface Table {
-    id: number;
-    number: string;
-    capacity: number;
+    id: string;
+    table_number: number;
+    seating_capacity: number;
     status: boolean;
 }
 
 export interface Reservation {
-    id: number;
+    id: string;
     reservation_date: string;
-    num_guests: number;
-    status: string;
+    guest_count: number;
+    status: boolean; 
     customer: Customer;
     table: Table;
 }
@@ -26,4 +27,5 @@ export interface ReservationResponse {
     next: string | null;
     previous: string | null;
     results: Reservation[];
+
 }
